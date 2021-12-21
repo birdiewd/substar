@@ -1,8 +1,11 @@
 import { Box, Button, ButtonGroup, Flex, Heading } from '@chakra-ui/react'
 import NavLink from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { supabaseClient } from '../lib/client'
+
+import logoPic from '../public/images/subStar_logo.png'
 
 const Navbar = ({ onOpen }) => {
 	const router = useRouter()
@@ -29,9 +32,16 @@ const Navbar = ({ onOpen }) => {
 					align="center"
 					justify="space-between"
 				>
-					<Heading mr="4">TodoApp</Heading>
+					<Heading mr="4">
+						<Image
+							src={logoPic}
+							alt="subStar logo"
+							width={30}
+							height={30}
+						/>
+						&nbsp; subStar
+					</Heading>
 					<Box>
-						{/* <NavLink href="/profile">Profile</NavLink> */}
 						<ButtonGroup spacing="4" ml="6">
 							<Button colorScheme="blue" onClick={onOpen}>
 								Add Star
