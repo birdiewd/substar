@@ -72,10 +72,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 	useEffect(() => {
 		const { data: authListener } = supabaseClient.auth.onAuthStateChange(
 			(event, session) => {
-				handleAuthSession(
-					event as AuthChangeEvent,
-					session as AuthSession
-				)
+				// handleAuthSession(
+				// 	event as AuthChangeEvent,
+				// 	session as AuthSession
+				// )
 
 				if (event === 'PASSWORD_RECOVERY') {
 					router.push('/reset')
@@ -117,17 +117,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 		}
 	}, [router.pathname, user, router])
 
-	const handleAuthSession = async (
-		event: AuthChangeEvent,
-		session: AuthSession
-	) => {
-		await fetch('/api/auth', {
-			method: 'POST',
-			headers: new Headers({ 'Content-Type': 'application/json' }),
-			credentials: 'same-origin',
-			body: JSON.stringify({ event, session }),
-		})
-	}
+	// const handleAuthSession = async (
+	// 	event: AuthChangeEvent,
+	// 	session: AuthSession
+	// ) => {
+	// 	// await fetch('/api/auth', {
+	// 	// 	method: 'POST',
+	// 	// 	headers: new Headers({ 'Content-Type': 'application/json' }),
+	// 	// 	credentials: 'same-origin',
+	// 	// 	body: JSON.stringify({ event, session }),
+	// 	// })
+	// }
 
 	return (
 		<AppContext.Provider
