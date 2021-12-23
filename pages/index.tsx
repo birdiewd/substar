@@ -1,40 +1,49 @@
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
-import Navbar from '../components/Navbar'
-import { supabaseClient } from '../lib/client'
+import { useMemo, useRef } from 'react'
 import { useDisclosure } from '@chakra-ui/hooks'
+import { Grid, Tooltip } from '@chakra-ui/react'
+import Image from 'next/image'
+import moment from 'moment'
+import { useContext } from 'react'
 
+import AppContext from '../AppContext'
+import Navbar from '../components/Navbar'
 import ManageStars from '../components/ManageStars'
+import StarPng from '../public/images/star.png'
 
 const Home = () => {
 	const initialRef = useRef()
+
 	const { isOpen, onOpen, onClose } = useDisclosure()
-	const [starData, setStarData] = useState([])
 
-	const router = useRouter()
-	const user = supabaseClient.auth.user()
+	const {
+		state: { starData, isOwner },
+	} = useContext(AppContext)
 
-	const getStars = async () => {
-		const { data: stars, error } = await supabaseClient
-			.from('stars')
-			.select('*')
+	const stellarWeeks = useMemo(() => {
+		if (starData) {
+			const weekData = starData.reduce((weeks, star) => {
+				const thisWeek = moment(star.created_at).format('W')
 
-		if (error) {
-			console.log('star fetch error', error)
-		} else {
-			console.log(stars)
-			setStarData(stars)
+				if (!Object.keys(weeks).includes(thisWeek)) {
+					weeks = {
+						...weeks,
+						[thisWeek]: [],
+					}
+				}
+
+				weeks[thisWeek].push(star)
+
+				return weeks
+			}, {})
+
+			console.log({ weekData })
+
+			return weekData
 		}
-	}
 
-	useEffect(() => {
-		if (!user) {
-			router.push('/signin')
-		} else {
-			getStars()
-		}
-	}, [user, router])
+		return {}
+	}, [starData])
 
 	return (
 		<div>
@@ -45,12 +54,87 @@ const Home = () => {
 			</Head>
 			<main>
 				<Navbar onOpen={onOpen} />
-				<ul>
-					{starData &&
-						starData.map((star) => (
-							<li key={star.id}>{star.description}</li>
-						))}
-				</ul>
+				<Grid templateRows={'auto'} rowGap={'2rem'} p="2rem">
+					{stellarWeeks &&
+						Object.keys(stellarWeeks)
+							.sort()
+							.reverse()
+							.map((weekNumber) => (
+								<div key={`week-${weekNumber}`}>
+									<strong>
+										Week of{' '}
+										{moment()
+											.week(weekNumber)
+											.day(1)
+											.format('YYYY-MM-DD')}{' '}
+										thru{' '}
+										{moment()
+											.week(weekNumber)
+											.day(7)
+											.format('YYYY-MM-DD')}
+									</strong>
+									<Grid
+										templateColumns={
+											'repeat(auto-fill, 3rem)'
+										}
+										p="1rem"
+										gap={'.5rem'}
+									>
+										{stellarWeeks[weekNumber]
+											.reverse()
+											.map((star) =>
+												star.is_super ? (
+													<Tooltip
+														label={`${moment(
+															star.created_at
+														).format('ddd')} - ${
+															star.description
+														}`}
+														key={star.id}
+														isDisabled={!isOwner}
+													>
+														<div
+															style={{
+																filter: 'opacity(.5) hue-rotate(120deg) drop-shadow(0 0 0 #0000ff)',
+															}}
+														>
+															<Image
+																title={
+																	star.description
+																}
+																src={StarPng}
+																height={100}
+																width={100}
+															/>
+														</div>
+													</Tooltip>
+												) : (
+													<Tooltip
+														label={`${moment(
+															star.created_at
+														).format('ddd')} - ${
+															star.description
+														}`}
+														key={star.id}
+														isDisabled={!isOwner}
+													>
+														<div>
+															<Image
+																title={
+																	star.description
+																}
+																src={StarPng}
+																height={100}
+																width={100}
+															/>
+														</div>
+													</Tooltip>
+												)
+											)}
+									</Grid>
+								</div>
+							))}
+				</Grid>
 				<ManageStars
 					isOpen={isOpen}
 					onClose={onClose}

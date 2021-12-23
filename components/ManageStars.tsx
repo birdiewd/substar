@@ -18,9 +18,18 @@ import {
 	Textarea,
 } from '@chakra-ui/react'
 import { FormEvent, useState } from 'react'
+import { useContext } from 'react'
+import moment from 'moment'
+
+import AppContext from '../AppContext'
 import { supabaseClient } from '../lib/client'
 
 const ManageTodo = ({ isOpen, onClose, initialRef }) => {
+	const {
+		state: { user, starData, relationshipData, isOwner },
+		getStars,
+	} = useContext(AppContext)
+
 	const [description, setDescription] = useState('')
 	const [isSuper, setIsSuper] = useState(false)
 
@@ -30,21 +39,27 @@ const ManageTodo = ({ isOpen, onClose, initialRef }) => {
 	const submitHandler = async (event: FormEvent) => {
 		event.preventDefault()
 		setErrorMessage('')
-		if (description.length <= 10) {
+		if (description.length <= 5) {
 			setErrorMessage('Be more descriptive.')
 			return
 		}
 		setIsLoading(true)
-		const user = supabaseClient.auth.user()
-		const { error } = await supabaseClient
-			.from('stars')
-			.insert([{ description, isSuper, user_id: user.id }])
+		const { error } = await supabaseClient.from('stars').insert([
+			{
+				description,
+				is_super: isSuper,
+				owner_id: user?.id,
+				sub_id: relationshipData[0].sub_id,
+				created_at: moment().format('YYYY-MM-DD'),
+			},
+		])
 
 		setIsLoading(false)
 
 		if (error) {
 			setErrorMessage(error.message)
 		} else {
+			getStars()
 			closeHandler()
 		}
 	}

@@ -1,13 +1,23 @@
 import { Box, Button, ButtonGroup, Flex, Heading } from '@chakra-ui/react'
-import NavLink from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useContext } from 'react'
+
+import AppContext from '../AppContext'
 import { supabaseClient } from '../lib/client'
 
 import logoPic from '../public/images/subStar_logo.png'
 
 const Navbar = ({ onOpen }) => {
+	const {
+		state: { user, starData, relationshipData, isOwner },
+	} = useContext(AppContext)
+
+	// console.log({
+	// 	appState,
+	// })
+
 	const router = useRouter()
 	const [isLogoutLoading, setIsLogoutLoading] = useState(false)
 
@@ -43,9 +53,11 @@ const Navbar = ({ onOpen }) => {
 					</Heading>
 					<Box>
 						<ButtonGroup spacing="4" ml="6">
-							<Button colorScheme="blue" onClick={onOpen}>
-								Add Star
-							</Button>
+							{isOwner && (
+								<Button colorScheme="blue" onClick={onOpen}>
+									Add Star
+								</Button>
+							)}
 							<Button
 								colorScheme="red"
 								onClick={logoutHandler}
