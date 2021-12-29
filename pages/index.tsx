@@ -67,13 +67,13 @@ const Home = () => {
 										{moment()
 											.week(weekNumber)
 											.add(1, 'week')
-											.day(1)
+											.day(2)
 											.format('YYYY-MM-DD')}{' '}
 										thru{' '}
 										{moment()
 											.week(weekNumber)
 											.add(1, 'week')
-											.day(7)
+											.day(8)
 											.format('YYYY-MM-DD')}
 									</strong>
 									<Grid
