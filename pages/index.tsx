@@ -61,15 +61,18 @@ const Home = () => {
 							.reverse()
 							.map((weekNumber) => (
 								<div key={`week-${weekNumber}`}>
+									{console.log(weekNumber)}
 									<strong>
 										Week of{' '}
 										{moment()
 											.week(weekNumber)
+											.add(1, 'week')
 											.day(1)
 											.format('YYYY-MM-DD')}{' '}
 										thru{' '}
 										{moment()
 											.week(weekNumber)
+											.add(1, 'week')
 											.day(7)
 											.format('YYYY-MM-DD')}
 									</strong>
@@ -112,7 +115,9 @@ const Home = () => {
 													<Tooltip
 														label={`${moment(
 															star.created_at
-														).format('ddd')} - ${
+														).format(
+															'ddd, YYYY-MM-DD'
+														)} - ${
 															star.description
 														}`}
 														key={star.id}

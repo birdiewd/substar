@@ -23,12 +23,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 				? await supabaseClient
 						.from('stars')
 						.select('*')
-						.order('created_at', { ascending: false })
+						.lte('created_at', moment().format('YYYY-MM-DD'))
+						.order('id', { ascending: false })
 				: await supabaseClient
 						.from('stars')
 						.select('created_at, is_super, id')
-						.order('created_at', { ascending: false })
 						.lt('created_at', moment().format('YYYY-MM-DD'))
+						.order('id', { ascending: false })
 
 		console.log({ stars })
 
@@ -71,12 +72,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	useEffect(() => {
 		const { data: authListener } = supabaseClient.auth.onAuthStateChange(
-			(event, session) => {
-				// handleAuthSession(
-				// 	event as AuthChangeEvent,
-				// 	session as AuthSession
-				// )
-
+			(event) => {
 				if (event === 'PASSWORD_RECOVERY') {
 					router.push('/reset')
 				}
@@ -109,25 +105,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 	useEffect(() => {
 		if (user) {
-			console.log({ user })
-
 			if (router.pathname === '/signin') {
 				router.push('/')
 			}
 		}
 	}, [router.pathname, user, router])
-
-	// const handleAuthSession = async (
-	// 	event: AuthChangeEvent,
-	// 	session: AuthSession
-	// ) => {
-	// 	// await fetch('/api/auth', {
-	// 	// 	method: 'POST',
-	// 	// 	headers: new Headers({ 'Content-Type': 'application/json' }),
-	// 	// 	credentials: 'same-origin',
-	// 	// 	body: JSON.stringify({ event, session }),
-	// 	// })
-	// }
 
 	return (
 		<AppContext.Provider
