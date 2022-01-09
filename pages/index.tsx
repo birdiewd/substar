@@ -23,7 +23,9 @@ const Home = () => {
 	const stellarWeeks = useMemo(() => {
 		if (starData) {
 			const weekData = starData.reduce((weeks, star) => {
-				const thisWeek = moment(star.created_at).format('W')
+				const thisWeek = moment(star.created_at)
+					.startOf('week')
+					.format('YYYY-MM-DD')
 
 				if (!Object.keys(weeks).includes(thisWeek)) {
 					weeks = {
@@ -64,16 +66,16 @@ const Home = () => {
 									{console.log(weekNumber)}
 									<strong>
 										Week of{' '}
-										{moment()
-											.week(weekNumber)
-											.add(1, 'week')
-											.day(2)
+										{moment(weekNumber)
+											// .week(weekNumber)
+											// .add(1, 'week')
+											// .day(2)
 											.format('YYYY-MM-DD')}{' '}
 										thru{' '}
-										{moment()
-											.week(weekNumber)
-											.add(1, 'week')
-											.day(8)
+										{moment(weekNumber)
+											// .week(weekNumber)
+											.add(6, 'days')
+											// .day(8)
 											.format('YYYY-MM-DD')}
 									</strong>
 									<Grid
@@ -90,7 +92,9 @@ const Home = () => {
 													<Tooltip
 														label={`${moment(
 															star.created_at
-														).format('ddd')} - ${
+														).format(
+															'ddd - MM-DD'
+														)} - ${
 															star.description
 														}`}
 														key={star.id}
@@ -116,7 +120,7 @@ const Home = () => {
 														label={`${moment(
 															star.created_at
 														).format(
-															'ddd, YYYY-MM-DD'
+															'ddd - MM-DD'
 														)} - ${
 															star.description
 														}`}
